@@ -1,0 +1,26 @@
+model:
+  path: '../weights/actuator_model1.pt'
+  hidden_size: 30
+  num_layers: 4    
+  dropout_rate: 0.03
+
+data:
+  train_data_path: '../data/test.txt'
+  validation_data_path: '../data/validation.txt'
+  eval_data_path: '../data/evaluation.txt'
+
+training:
+  lri: 0.0001     # Initial learning rate
+  lrf: 0.000005   # Final learning rate (trying prevent overshoot the optimal solution)
+  batch_size: 64
+  patience: 400
+  num_epochs: 3500
+  pct_start: 0.12
+  anneal_strategy: 'cos'
+  weight_decay: 0.01
+
+# TensorBoard Config
+tensorboard:
+  log_dir: 'runs/test1'  # Directory where TensorBoard logs will be stored
+
+device: 'cuda'  
