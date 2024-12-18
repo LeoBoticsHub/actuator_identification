@@ -71,6 +71,13 @@ class ActuatorNetTrainer:
         velocities = data['dq'].values
         torques = data['tau_est'].values
         temperatures = data['temperature'].values
+        
+        print("------------------------------------LOADED DATA----------------------------------------------")        
+        print(f"position_errors: {position_errors}")
+        print(f"velocities: {velocities}")
+        print(f"torques: {torques}")
+        print(f"temperatures: {temperatures}")
+        print("----------------------------------------------------------------------------------")
 
         return position_errors, velocities, temperatures, torques
 
@@ -86,12 +93,21 @@ class ActuatorNetTrainer:
         Returns:
             tuple: Arrays of input features (X) and target values (y).
         """
+        print("---------------------------------------PREPARE SEQUENCE DATA-------------------------------------------")
+        print(f"position_errors: {position_errors}")
+        print(f"velocities: {velocities}")
+        print(f"torques: {torques}")
+        print(f"temperatures: {temperatures}")
+        print("----------------------------------------------------------------------------------")
         X, y = [], []
         for i in range(len(torques) - HISTORY_SIZE + 1):
             X.append(np.column_stack((position_errors[i:i+HISTORY_SIZE], 
                                       velocities[i:i+HISTORY_SIZE],
                                       temperatures[i:i+HISTORY_SIZE])))
             y.append(torques[i+HISTORY_SIZE-1])
+        print(f"X: {np.array(X)}")
+        print(f"y: {np.array(y)}")
+
         return np.array(X), np.array(y)
     
     def normalize_data(self, data, min_val, max_val):
@@ -119,7 +135,21 @@ class ActuatorNetTrainer:
         """
         train_position_errors, train_velocities, train_temperatures, train_torques = self.load_data(train_data_path)
         val_position_errors, val_velocities, val_temperatures, val_torques = self.load_data(val_data_path)
-
+        
+        print("---------------------------------------TRAIN DATA-------------------------------------------")
+        print(f"train_position_errors: {train_position_errors}")
+        print(f"train_velocities: {train_velocities}")
+        print(f"train_torques: {train_torques}")
+        print(f"train_temperatures: {train_temperatures}")
+        print("----------------------------------------------------------------------------------")
+        
+        print("---------------------------------------VALIDATION DATA-------------------------------------------")
+        print(f"val_position_errors: {val_position_errors}")
+        print(f"val_velocities: {val_velocities}")
+        print(f"val_torques: {val_torques}")
+        print(f"val_temperatures: {val_temperatures}")
+        print("----------------------------------------------------------------------------------")
+        
         # Normalize the data
         train_position_errors = self.normalize_data(train_position_errors, -MAX_ERROR, MAX_ERROR)
         train_velocities = self.normalize_data(train_velocities, -MAX_VELOCITY, MAX_VELOCITY)
@@ -131,8 +161,8 @@ class ActuatorNetTrainer:
         val_temperatures = self.normalize_data(val_temperatures, -MAX_TEMPERATURE, MAX_TEMPERATURE)
         val_torques = self.normalize_data(val_torques, -MAX_TORQUE, MAX_TORQUE)
 
-        X_train, y_train = self.prepare_sequence_data(train_position_errors, train_velocities, train_temperatures, train_torques)
-        X_val, y_val = self.prepare_sequence_data(val_position_errors, val_velocities, val_temperatures, val_torques)
+        X_train, y_train = self.prepare_sequence_data(train_position_errors, train_velocities, train_torques, train_temperatures)
+        X_val, y_val = self.prepare_sequence_data(val_position_errors, val_velocities, val_torques, val_temperatures)
 
         X_train = torch.FloatTensor(X_train).to(self.device)
         y_train = torch.FloatTensor(y_train).to(self.device)

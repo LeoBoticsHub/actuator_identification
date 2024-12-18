@@ -1,3 +1,5 @@
+#!/opt/conda/bin/python3
+
 import torch
 import numpy as np
 import pandas as pd
@@ -153,7 +155,7 @@ class ActuatorNetEvaluator:
             else:
                 print(f"Warning: {subplot_name} is not a valid subplot name.")
 
-    def plot_predictions_vs_actual(self, y, predictions, save_html=False):
+    def plot_predictions_vs_actual(self, y, predictions, save_html=True):
         # Calculate model error
         self.error_values = predictions - y
         z_scores = stats.zscore(self.error_values)
@@ -253,7 +255,7 @@ class ActuatorNetEvaluator:
 
     def plot_data_visualization(self, y, predictions, position_errors, velocities, temperatures, 
                                 rms_error, percentage_accuracy, total_inference_time, average_inference_time, 
-                                plot_vs_time=False, save_html=False, save_pdf=False, pdf_subplots=None):
+                                plot_vs_time=False, save_html=True, save_pdf=True, pdf_subplots=None):
         border_thickness = 3
         line_thickness = 3
         tick_len = 8
@@ -380,7 +382,7 @@ class ActuatorNetEvaluator:
 
 
 
-    def plot_predictions(self, data_file, prediction_files, model_names, plot_vs_time=False, save_html=False, save_pdf=False, pdf_subplots=None, plot_config=None):
+    def plot_predictions(self, data_file, prediction_files, model_names, plot_vs_time=False, save_html=True, save_pdf=False, pdf_subplots=None, plot_config=None):
         # Default plot configuration
         default_config = {
             'position_error': False,
@@ -395,7 +397,7 @@ class ActuatorNetEvaluator:
 
         # Load the original data
         data = pd.read_csv(data_file, delimiter=',')
-        position_errors = data['q_eeror'].values
+        position_errors = data['q_error'].values
         velocities = data['dq'].values
         temperatures = data['temperature'].values
         actual_torques = data['tau_est'].values
@@ -427,7 +429,7 @@ class ActuatorNetEvaluator:
         fig = make_subplots(rows=active_plots, cols=1, shared_xaxes=True, vertical_spacing=0.1)
 
         current_row = 1
-
+        
         # Function to add a trace if it's enabled in plot_config
         def add_trace_if_enabled(plot_type, trace):
             nonlocal current_row
@@ -548,7 +550,7 @@ class ActuatorNetEvaluator:
 
 
             
-    def plot_error_histograms(self, data_file, prediction_files, model_names, save_html=False, save_pdf=False, pdf_subplots=None):
+    def plot_error_histograms(self, data_file, prediction_files, model_names, save_html=True, save_pdf=False, pdf_subplots=None):
         # Load the original data
         data = pd.read_csv(data_file, delimiter=',')
         actual_torques = data['Torque'].values
@@ -672,8 +674,8 @@ class ActuatorNetEvaluator:
         print(f"Predicted torque values saved to {output_file}")
 
     def evaluate_model(self, X, y, position_errors, velocities, temperatures, torques, 
-                       vs_time=False, save_html=False, save_pdf=False, pdf_subplots=None, 
-                       save_predictions=False, prediction_output_file=None):
+                       vs_time=False, save_html=True, save_pdf=True, pdf_subplots=None, 
+                       save_predictions=True, prediction_output_file=None):
         # Use traced model for evaluation
         self.traced_model.eval()
         X_tensor = torch.FloatTensor(X).to(self.device)
@@ -718,23 +720,27 @@ class ActuatorNetEvaluator:
 def main():
     
     # Update these paths as needed
-    data_path = '../data/evaluation.txt'
+    data_path = '../data/test.txt'
     model_path = '../weights/actuator_model1.pt'
 
     # Create an instance of the evaluator
     evaluator = ActuatorNetEvaluator(model_path, run_device='cpu')
 
     # Load and prepare the data
-    position_errors, velocities, torques = evaluator.load_data(data_path)
-    X, y = evaluator.prepare_sequence_data(position_errors, velocities, torques)
+    position_errors, velocities, temperatures, torques = evaluator.load_data(data_path)
+    X, y = evaluator.prepare_sequence_data(position_errors, velocities, temperatures, torques)
 
     # Evaluate the model
-    metrics = evaluator.evaluate_model(X, y, position_errors, velocities, torques)
+    metrics = evaluator.evaluate_model(X, y, position_errors, velocities, temperatures, torques)
 
     # Print the evaluation metrics
     print("\nEvaluation Metrics:")
     for key, value in metrics.items():
         print(f"{key}: {value}")
-
+        
+    # predictions_file = [
+    #     '/home/actuator_identification/actuator_identification_ws/src/actuator_identification/training/src/script/predicted_torque_actuator_model1.txt' 
+    # ]
+    # evaluator.plot_predictions(data_path, predictions_file, model_path)
 if __name__ == "__main__":
     main()

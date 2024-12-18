@@ -59,11 +59,16 @@ def main():
 
     # Evaluate the model after training
     evaluator = ActuatorNetEvaluator(model_path, run_device='cpu')
-    position_errors, velocities, currents, torques = evaluator.load_data(eval_data_path)
-    X, y = evaluator.prepare_sequence_data(position_errors, velocities, currents, torques)
+    position_errors, velocities, temperatures, torques = evaluator.load_data(eval_data_path)
+    X, y = evaluator.prepare_sequence_data(position_errors, velocities, temperatures, torques)
+
+    print(f"position_errors: {position_errors}")
+    print(f"velocities: {velocities}")
+    print(f"temperatures: {temperatures}")
+    print(f"torques: {torques}")
 
     # Capture the evaluation metrics
-    evaluation_metrics = evaluator.evaluate_model(X, y, position_errors, velocities, currents, torques)
+    evaluation_metrics = evaluator.evaluate_model(X, y, position_errors, velocities, temperatures, torques)
 
     # Close the TensorBoard writer after training
     writer.close()
