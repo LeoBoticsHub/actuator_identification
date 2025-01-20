@@ -10,10 +10,10 @@ NUM_LAYERS = 4
 
 '''Warning! Changing these will change all the models!'''
 # Data normalization parameters
-MAX_TORQUE = 20.0
-MAX_VELOCITY = 3
-MAX_ERROR = 0.1
-MAX_TEMPERATURE = 50
+MAX_TORQUE = 25.0
+MAX_VELOCITY = 2.5
+MAX_ERROR = 0.12
+MAX_TEMPERATURE = 55
 
 class ActuatorNet(nn.Module):
     def __init__(self, input_size=INPUT_SIZE, hidden_size=HISTORY_SIZE, num_layers=NUM_LAYERS, dropout_rate=0.2):

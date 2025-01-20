@@ -54,7 +54,7 @@ def main():
         save_path=model_path,
         entity_name=None,  # No entity for TensorBoard
         project_name=None,  # No project for TensorBoard
-        run_name=None  # No run name for TensorBoard, TensorBoard uses the log_dir
+        run_name=f'{config["tensorboard"]["log_dir"]}'  # No run name for TensorBoard, TensorBoard uses the log_dir
     )
 
     # Evaluate the model after training

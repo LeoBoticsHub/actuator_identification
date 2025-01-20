@@ -77,6 +77,7 @@ class ActuatorNetEvaluator:
         print("Model successfully traced.")
         return traced_model
 
+    # def load_model(self, model_path, run_device=None):
     def load_model(self, model_path, run_device=None):
         if run_device is None:
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -88,7 +89,7 @@ class ActuatorNetEvaluator:
         else:
             print("Using CPU")
 
-        state_dict = torch.load(model_path, map_location=device, weights_only=True)
+        state_dict = torch.load(model_path, map_location=device)
         
         # Determine the hidden size and number of layers from the state dict
         hidden_size = state_dict['gru.weight_ih_l0'].size(0) // 3
@@ -720,8 +721,8 @@ class ActuatorNetEvaluator:
 def main():
     
     # Update these paths as needed
-    data_path = '../data/test.txt'
-    model_path = '../weights/actuator_model1.pt'
+    data_path = '../data/data_2/evaluation.csv'
+    model_path = '../weights/actuator_model2.pt'
 
     # Create an instance of the evaluator
     evaluator = ActuatorNetEvaluator(model_path, run_device='cpu')
