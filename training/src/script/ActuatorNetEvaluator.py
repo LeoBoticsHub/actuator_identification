@@ -721,8 +721,8 @@ class ActuatorNetEvaluator:
 def main():
     
     # Update these paths as needed
-    data_path = '../data/data_2/evaluation.csv'
-    model_path = '../weights/actuator_model2.pt'
+    data_path = '../data/data_3/evaluation.csv'
+    model_path = '../weights/actuator_model6.pt'
 
     # Create an instance of the evaluator
     evaluator = ActuatorNetEvaluator(model_path, run_device='cpu')

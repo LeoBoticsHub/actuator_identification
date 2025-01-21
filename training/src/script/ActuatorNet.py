@@ -10,9 +10,9 @@ NUM_LAYERS = 4
 
 '''Warning! Changing these will change all the models!'''
 # Data normalization parameters
-MAX_TORQUE = 25.0
-MAX_VELOCITY = 2.5
-MAX_ERROR = 0.12
+MAX_TORQUE = 13.3
+MAX_VELOCITY = 0.33
+MAX_ERROR = 0.11
 MAX_TEMPERATURE = 55
 
 class ActuatorNet(nn.Module):
